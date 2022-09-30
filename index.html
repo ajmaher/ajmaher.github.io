@@ -3,12 +3,18 @@
 <head>
     <title>Are we tailgating this weekend</title>
     <style>
+		body {
+			background-image: url('blue orange hourglass.jpg');
+			background-size: contain;
+			color: black;
+		}
         #game p {
 			font-size: 2vw; 
 		}
         #answer h1 {
 			font-size: 30vw;
 			line-height: 10%; 
+			color: white;
 		}
         #answer p {
 			font-size: 3vw; 
@@ -20,16 +26,19 @@
 			display: flex;
 			align-items: center;
 		}
+		.background-gray {
+			background-color: rgba(255, 255, 255, 0.7); /* Color white with alpha 0.9*/
+		}
     </style>
 </head>
 <body>
-	<div class="center">
+	<div class="center ">
 		<div id="game" class="">
-			<p>October 2 2022 vs Eastern Washington</p>
+			<p class="background-gray">October 2 2022 vs Eastern Washington</p>
 		<div>
 		<div id="answer" class="">
 			<h1>No</h1>
-			<p>The game is at noon on a Sunday (thanks Ian).</p>
+			<p class="background-gray">The game is at noon on a Sunday (thanks Ian).</p>
 		</div>
 	</div>
 </body>
