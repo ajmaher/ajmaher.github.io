@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <title>Are we tailgating this weekend</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -11,19 +12,25 @@
             background-repeat: no-repeat;
             background-position: top center;
             color: black;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 1rem;
         }
 
         #name p {
             font-size: 0.7em;
+            margin-bottom: 0.5em;
         }
 
         #game p {
             font-size: 2em;
+            margin: 0.5em 0;
         }
 
         #answer h1 {
             font-size: 5em;
-            line-height: 10%;
+            line-height: 1em;
+            margin: 0.2em 0;
             color: black;
         }
 
@@ -38,6 +45,12 @@
             padding: 0;
         }
 
+        #menu li,
+        #schedule li,
+        #nextgames li {
+            margin: 0.4em 0;
+        }
+
         .center {
             text-align: center;
         }
@@ -49,93 +62,359 @@
 
         .background-gray {
             background-color: rgba(255, 255, 255, 0.7);
-            /* Color white with alpha 0.9*/
         }
 
         img {
             max-width: 100%;
+            height: auto;
+        }
+
+        a {
+            color: #0021A5;
+        }
+
+        h2 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        #rsvp-section {
+            margin: 1em 0;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
 
 <body>
-    <div class="center ">
+    <div class="center">
         <div id="name">
             <p>Tailgate in the Sink</p>
         </div>
 
-        <div id="game" class="">
-            <p class="background-gray">Sept 5 2026 Florida Atlantic</p>
+        <div id="game">
+            <p id="game-info" class="background-gray"></p>
         </div>
 
-        <div id="answer" class="">
-            <h1>Yes!</h1>
-
-            <img src='NO_FUSION_1122_021.jpeg' />
-            <!--<p class="background-gray">No Kings</p>-->
-
+        <div id="answer">
+            <h1 id="answer-status"></h1>
+            <div id="answer-image-container" style="display: none;">
+                <img id="answer-image" src="" alt="Tailgate photo" />
+            </div>
         </div>
-        <!-- <div>
-            <p><a href="https://partiful.com/e/h94RNOroCOo8nfH5t96z?source=share">Rsvp on Partiful</a></p>
-        </div> -->
-        <div>
-            <h2>If yes, go here:</h2>
-            <p><a href="https://maps.app.goo.gl/NEjJYNXudQhtvL9L9?g_st=com.google.maps.preview.copy">Along Museum Rd,
-                    just West of Newins Zeigler</a></p>
+
+        <div id="rsvp-section" style="display: none;">
+            <p><a id="rsvp-link" href="#" target="_blank" rel="noopener">RSVP on Partiful</a></p>
         </div>
-        <!--<div id="menu">
+
+        <div id="location-section" style="display: none;">
+            <h2 id="location-header">If yes, go here:</h2>
+            <p><a id="location-link" href="#" target="_blank" rel="noopener"></a></p>
+        </div>
+
+        <div id="menu" style="display: none;">
             <h2>This week's menu</h2>
-            <ul>
-			    <li>Japanese style curry rice</li>
-							<li>Snacks</li>
-			    <li>Kegs and assorted NA bevs</li>
-			</ul>
-    	</div> -->
+            <ul id="menu-list"></ul>
+        </div>
 
-        <!--
-	<div id="schedule">
+        <div id="schedule" style="display: none;">
             <h2>Schedule</h2>
-            <ul>
-	        <li>6:00am — Someone will be there</li>
-		<li>10:00am — 🍺🍺🍻</li>
-		<li>1:00pm — Chicken curry</li>
-		<li>3:30pm — Game time</li>
-		<li>6:30pm — Shut it down</li>
-	    </ul>
-    	</div>  
-	-->
-        <!--
-        <div id="menu">
-            <h2>This week's menu</h2>
-            <p>Prix fixe</p>
-            <ul>
-                <li>
-                    <h3>Apps</h3>
-                    <ul>
-                        <li>Nachos</li>
-                    </ul>
-                </li>
-                <li>
-                    <h3>Dinner (lunch)</h3>
-                    <ul>
-                        <li>Fried turkey</li>
-			<li>Potato salad</li>
-			<li>Rolls</li>
-			<li>Fried Oreos</li>
-                    </ul>
-                </li>
-            </ul>
+            <ul id="schedule-list"></ul>
         </div>
-        -->
 
-        <div id="nextgames">
+        <div id="nextgames" style="display: none;">
             <h2>Next tailgates</h2>
-            <ul>
-                <li>9/12 vs Campbell &#128042;</li>
-            </ul>
+            <ul id="nextgames-list"></ul>
         </div>
-
     </div>
+
+    <script>
+        function normalizeDateStr(d) {
+            if (!d) return '';
+            if (d instanceof Date) {
+                return d.toISOString().split('T')[0];
+            }
+            return String(d).trim();
+        }
+
+        function parseYamlFallback(text) {
+            const lines = text.split('\n');
+            let defaults = {
+                location: 'Along Museum Rd, just West of Newins Zeigler',
+                locationMapUrl: 'https://maps.app.goo.gl/NEjJYNXudQhtvL9L9?g_st=com.google.maps.preview.copy'
+            };
+            let games = [];
+            let currentSection = null;
+            let currentGame = null;
+            let currentListKey = null;
+
+            for (let rawLine of lines) {
+                const line = rawLine.trimEnd();
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('#')) continue;
+
+                if (trimmed.startsWith('defaults:')) {
+                    currentSection = 'defaults';
+                    continue;
+                }
+                if (trimmed.startsWith('games:')) {
+                    currentSection = 'games';
+                    continue;
+                }
+
+                const indent = line.search(/\S/);
+
+                if (currentSection === 'defaults' && indent >= 2) {
+                    const parts = line.trim().split(':');
+                    const key = parts[0].trim();
+                    let val = parts.slice(1).join(':').trim().replace(/^['\"]|['\"]$/g, '');
+                    defaults[key] = val;
+                } else if (currentSection === 'games') {
+                    if (trimmed.startsWith('- date:')) {
+                        currentListKey = null;
+                        currentGame = { menu: [], schedule: [] };
+                        games.push(currentGame);
+                        const val = trimmed.slice(7).trim().replace(/^['\"]|['\"]$/g, '');
+                        currentGame.date = val;
+                    } else if (currentGame) {
+                        if (trimmed.startsWith('- ')) {
+                            const itemVal = trimmed.slice(2).trim().replace(/^['\"]|['\"]$/g, '');
+                            if (currentListKey && Array.isArray(currentGame[currentListKey])) {
+                                currentGame[currentListKey].push(itemVal);
+                            }
+                        } else if (trimmed.includes(':')) {
+                            const parts = trimmed.split(':');
+                            const key = parts[0].trim();
+                            let val = parts.slice(1).join(':').trim().replace(/^['\"]|['\"]$/g, '');
+                            if (val === 'true') val = true;
+                            else if (val === 'false') val = false;
+                            else if (val === '[]') val = [];
+                            
+                            if (Array.isArray(val)) {
+                                currentGame[key] = val;
+                                currentListKey = key;
+                            } else {
+                                currentListKey = null;
+                                currentGame[key] = val;
+                            }
+                        }
+                    }
+                }
+            }
+            return { defaults, games };
+        }
+
+        async function loadTailgateData() {
+            let yamlText = null;
+            
+            // Fetch games.yaml with cache-busting timestamp parameter
+            try {
+                const response = await fetch('games.yaml?v=' + Date.now());
+                if (response.ok) {
+                    yamlText = await response.text();
+                }
+            } catch (e) {
+                console.warn('Fetch games.yaml failed on local file:// URL.');
+            }
+
+            if (!yamlText) return;
+
+            let data = null;
+            if (window.jsyaml && typeof jsyaml.load === 'function') {
+                try {
+                    data = jsyaml.load(yamlText);
+                } catch (e) {
+                    console.warn('jsyaml parsing failed, using fallback parser:', e);
+                }
+            }
+            if (!data) {
+                data = parseYamlFallback(yamlText);
+            }
+
+            let games = [];
+            let defaultLocation = "Along Museum Rd, just West of Newins Zeigler";
+            let defaultLocationMapUrl = "https://maps.app.goo.gl/NEjJYNXudQhtvL9L9?g_st=com.google.maps.preview.copy";
+            let defaultImage = null;
+
+            if (Array.isArray(data)) {
+                games = data;
+            } else if (data && Array.isArray(data.games)) {
+                games = data.games;
+                if (data.defaults) {
+                    if (data.defaults.location) defaultLocation = data.defaults.location;
+                    if (data.defaults.locationMapUrl) defaultLocationMapUrl = data.defaults.locationMapUrl;
+                    if (data.defaults.image) defaultImage = data.defaults.image;
+                }
+            }
+
+            if (!games || games.length === 0) return;
+
+            // Support ?date=YYYY-MM-DD or ?date=YYYY-MM-DDTHH:MM URL parameter for testing/previewing any date/time
+            const urlParams = new URLSearchParams(window.location.search);
+            const overrideDateStr = urlParams.get('date');
+
+            let now = new Date();
+            if (overrideDateStr) {
+                if (overrideDateStr.includes('T')) {
+                    now = new Date(overrideDateStr);
+                } else {
+                    const [y, m, d] = overrideDateStr.split('-').map(Number);
+                    if (y && m && d) {
+                        now = new Date(y, m - 1, d, 12, 0, 0);
+                    }
+                }
+            }
+
+            // Check if there is a game matching "this week"
+            let thisWeekGame = null;
+            for (let i = 0; i < games.length; i++) {
+                const game = games[i];
+                const dateStr = normalizeDateStr(game.date);
+                const [y, m, d] = dateStr.split('-').map(Number);
+                
+                // Game week starts previous Sunday at 3:00 AM (6 days before Saturday)
+                const weekStart = new Date(y, m - 1, d - 6, 3, 0, 0);
+                // Game week ends Sunday morning post-game at 3:00 AM (1 day after Saturday)
+                const weekEnd = new Date(y, m - 1, d + 1, 3, 0, 0);
+
+                if (now >= weekStart && now < weekEnd) {
+                    thisWeekGame = game;
+                    break;
+                }
+            }
+
+            const gameInfoEl = document.getElementById('game-info');
+            const answerStatusEl = document.getElementById('answer-status');
+            const imgContainer = document.getElementById('answer-image-container');
+            const rsvpSec = document.getElementById('rsvp-section');
+            const rsvpLink = document.getElementById('rsvp-link');
+            const locationSec = document.getElementById('location-section');
+            const locationLink = document.getElementById('location-link');
+            const locationHeader = document.getElementById('location-header');
+            const menuSec = document.getElementById('menu');
+            const menuList = document.getElementById('menu-list');
+            const scheduleSec = document.getElementById('schedule');
+            const scheduleList = document.getElementById('schedule-list');
+            const nextGamesSec = document.getElementById('nextgames');
+            const nextGamesList = document.getElementById('nextgames-list');
+
+            // Determine if we are tailgating this week
+            const isTailgatingThisWeek = thisWeekGame && thisWeekGame.home !== false && thisWeekGame.tailgating === true;
+
+            if (thisWeekGame) {
+                const emoji = thisWeekGame.opponentEmoji ? ` ${thisWeekGame.opponentEmoji}` : '';
+                const awayPrefix = thisWeekGame.home === false ? '@ ' : '';
+                if (gameInfoEl) {
+                    gameInfoEl.textContent = `${thisWeekGame.displayDate} ${awayPrefix}${thisWeekGame.opponent}${emoji}`;
+                }
+            } else {
+                if (gameInfoEl) {
+                    gameInfoEl.textContent = "No Game This Weekend";
+                }
+            }
+
+            // 2. Huge Answer (Yes! vs No)
+            if (answerStatusEl) {
+                if (isTailgatingThisWeek) {
+                    answerStatusEl.textContent = thisWeekGame.customAnswer || 'Yes!';
+                } else {
+                    answerStatusEl.textContent = (thisWeekGame && thisWeekGame.customAnswer) ? thisWeekGame.customAnswer : 'No';
+                }
+            }
+
+            // 3. Image (checks game image first, then falls back to defaults.image)
+            const activeImage = (thisWeekGame && typeof thisWeekGame.image === 'string' && thisWeekGame.image.trim() !== '')
+                ? thisWeekGame.image.trim()
+                : defaultImage;
+
+            if (imgContainer) {
+                if (isTailgatingThisWeek && activeImage) {
+                    imgContainer.innerHTML = `<img src="${activeImage}" alt="Tailgate photo" />`;
+                    imgContainer.style.display = 'block';
+                } else {
+                    imgContainer.style.display = 'none';
+                }
+            }
+
+            // 4. RSVP Section (strict check for non-empty string URL)
+            let rsvpUrl = null;
+            if (thisWeekGame) {
+                const rawRsvp = thisWeekGame.rsvpUrl || thisWeekGame.partifulUrl;
+                if (typeof rawRsvp === 'string' && rawRsvp.trim().length > 0 && rawRsvp.trim() !== 'null') {
+                    rsvpUrl = rawRsvp.trim();
+                }
+            }
+
+            if (isTailgatingThisWeek && rsvpUrl) {
+                if (rsvpSec) rsvpSec.style.display = 'block';
+                if (rsvpLink) {
+                    rsvpLink.href = rsvpUrl;
+                    rsvpLink.textContent = 'RSVP on Partiful';
+                }
+            } else {
+                if (rsvpSec) rsvpSec.style.display = 'none';
+            }
+
+            // 5. Location Section
+            if (isTailgatingThisWeek) {
+                if (locationSec) locationSec.style.display = 'block';
+                if (locationHeader) locationHeader.textContent = 'If yes, go here:';
+                if (locationLink) {
+                    locationLink.textContent = thisWeekGame.location || defaultLocation;
+                    locationLink.href = thisWeekGame.locationMapUrl || defaultLocationMapUrl;
+                }
+            } else {
+                if (locationSec) locationSec.style.display = 'none';
+            }
+
+            // 6. Menu Section
+            if (menuSec && menuList) {
+                if (isTailgatingThisWeek && thisWeekGame.menu && thisWeekGame.menu.length > 0) {
+                    menuList.innerHTML = thisWeekGame.menu.map(item => `<li>${item}</li>`).join('');
+                    menuSec.style.display = 'block';
+                } else {
+                    menuSec.style.display = 'none';
+                }
+            }
+
+            // 7. Schedule Section
+            if (scheduleSec && scheduleList) {
+                if (isTailgatingThisWeek && thisWeekGame.schedule && thisWeekGame.schedule.length > 0) {
+                    scheduleList.innerHTML = thisWeekGame.schedule.map(item => `<li>${item}</li>`).join('');
+                    scheduleSec.style.display = 'block';
+                } else {
+                    scheduleSec.style.display = 'none';
+                }
+            }
+
+            // 8. Next Tailgates List (Lists future home tailgates)
+            if (nextGamesSec && nextGamesList) {
+                const futureHomeGames = games.filter(g => {
+                    const dateStr = normalizeDateStr(g.date);
+                    const [y, m, d] = dateStr.split('-').map(Number);
+                    const gameCutoff = new Date(y, m - 1, d + 1, 3, 0, 0);
+                    return g.home !== false && g.tailgating !== false && now < gameCutoff;
+                });
+
+                const activeDateStr = thisWeekGame ? normalizeDateStr(thisWeekGame.date) : null;
+
+                const remainingTailgates = isTailgatingThisWeek 
+                    ? futureHomeGames.filter(g => normalizeDateStr(g.date) !== activeDateStr)
+                    : futureHomeGames;
+
+                if (remainingTailgates.length > 0) {
+                    nextGamesList.innerHTML = remainingTailgates.map(g => {
+                        const emoji = g.opponentEmoji ? ` ${g.opponentEmoji}` : '';
+                        return `<li>${g.displayDate} vs ${g.opponent}${emoji}</li>`;
+                    }).join('');
+                    nextGamesSec.style.display = 'block';
+                } else {
+                    nextGamesSec.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadTailgateData);
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,114 @@
+defaults:
+  location: "Along Museum Rd, just West of Newins Zeigler"
+  locationMapUrl: "https://maps.app.goo.gl/NEjJYNXudQhtvL9L9?g_st=com.google.maps.preview.copy"
+  image: "NO_FUSION_1122_021.jpeg"
+
+games:
+
+  # home games
+
+  - date: 2026-09-05
+    displayDate: "Sept 5 2026"
+    opponent: "Florida Atlantic"
+    opponentEmoji: "🏈"
+    home: true
+    tailgating: true
+    customAnswer: "Yes!"
+    rsvpUrl:
+    menu:
+      - "Corn dogs"
+    schedule: []
+
+  - date: 2026-09-12
+    displayDate: "Sept 12 2026"
+    opponent: "Campbell"
+    opponentEmoji: "🐪"
+    home: true
+    tailgating: true
+    rsvpUrl: []
+    menu: []
+    schedule: []
+
+  - date: 2026-09-26
+    displayDate: "Sept 26 2026"
+    opponent: "Ole Miss"
+    opponentEmoji: "🦈"
+    home: true
+    tailgating: false
+    rsvpUrl: []
+    menu: []
+    schedule: []
+
+  - date: 2026-10-10
+    displayDate: "Oct 10 2026"
+    opponent: "South Carolina (Homecoming)"
+    opponentEmoji: "🐔"
+    home: true
+    tailgating: false
+    rsvpUrl: []
+    menu: []
+    schedule: []
+
+  - date: 2026-11-07
+    displayDate: "Nov 7 2026"
+    opponent: "Oklahoma"
+    opponentEmoji: "⭕"
+    home: true
+    tailgating: false
+    rsvpUrl: []
+    menu: []
+    schedule: []
+
+  - date: 2026-11-21
+    displayDate: "Nov 21 2026"
+    opponent: "Vanderbilt"
+    opponentEmoji: "⚓"
+    home: true
+    tailgating: false
+    rsvpUrl: []
+    menu: []
+    schedule: []
+
+  # away games
+
+  - date: 2026-09-19
+    displayDate: "Sept 19 2026"
+    opponent: "Auburn"
+    opponentEmoji: "🐅"
+    home: false
+    tailgating: false
+
+  - date: 2026-10-03
+    displayDate: "Oct 3 2026"
+    opponent: "Missouri"
+    opponentEmoji: "🐯"
+    home: false
+    tailgating: false
+
+  - date: 2026-10-17
+    displayDate: "Oct 17 2026"
+    opponent: "Texas"
+    opponentEmoji: "🤘"
+    home: false
+    tailgating: false
+
+  - date: 2026-10-31
+    displayDate: "Oct 31 2026"
+    opponent: "Georgia (Atlanta)"
+    opponentEmoji: "🐶"
+    home: false
+    tailgating: false
+
+  - date: 2026-11-14
+    displayDate: "Nov 14 2026"
+    opponent: "Kentucky"
+    opponentEmoji: "😼"
+    home: false
+    tailgating: false
+
+  - date: 2026-11-28
+    displayDate: "Nov 28 2026"
+    opponent: "Florida State"
+    opponentEmoji: "🍢"
+    home: false
+    tailgating: false
