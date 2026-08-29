@@ -14,7 +14,7 @@ games:
     home: true
     tailgating: true
     customAnswer: "Yes!"
-    rsvpUrl:
+    rsvpUrl: https://partiful.com/e/wiqvvGEhTRX58ic28981?c=UnS4brsA
     menu:
       - "Corn dogs"
     schedule: []
