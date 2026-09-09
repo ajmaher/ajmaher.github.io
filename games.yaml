@@ -25,8 +25,9 @@ games:
     opponentEmoji: "🐪"
     home: true
     tailgating: true
-    rsvpUrl: []
-    menu: []
+    rsvpUrl: https://partiful.com/e/5CKHtdU9OFbvR1RMdVBn?c=-EyTLSXF
+    menu:
+      - "Low country boil"
     schedule: []
 
   - date: 2026-09-26
@@ -34,7 +35,7 @@ games:
     opponent: "Ole Miss"
     opponentEmoji: "🦈"
     home: true
-    tailgating: false
+    tailgating: true
     rsvpUrl: []
     menu: []
     schedule: []
