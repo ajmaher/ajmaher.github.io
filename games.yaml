@@ -45,7 +45,7 @@ games:
     opponent: "South Carolina (Homecoming)"
     opponentEmoji: "🐔"
     home: true
-    tailgating: false
+    tailgating: true
     rsvpUrl: []
     menu: []
     schedule: []
@@ -55,7 +55,7 @@ games:
     opponent: "Oklahoma"
     opponentEmoji: "⭕"
     home: true
-    tailgating: false
+    tailgating: true
     rsvpUrl: []
     menu: []
     schedule: []
@@ -65,7 +65,7 @@ games:
     opponent: "Vanderbilt"
     opponentEmoji: "⚓"
     home: true
-    tailgating: false
+    tailgating: true
     rsvpUrl: []
     menu: []
     schedule: []
