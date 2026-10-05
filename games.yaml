@@ -45,7 +45,7 @@ games:
     opponent: "South Carolina (Homecoming)"
     opponentEmoji: "🐔"
     home: true
-    tailgating: true
+    tailgating: flase
     rsvpUrl: []
     menu: []
     schedule: []
