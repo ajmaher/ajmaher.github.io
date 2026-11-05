@@ -57,7 +57,9 @@ games:
     home: true
     tailgating: true
     rsvpUrl: https://partiful.com/e/EMptwf9LnsXGftkDPLEW?c=9Q_ORA0a
-    menu: []
+    menu: 
+      - chicken curry
+      - snacks and sides
     schedule: []
 
   - date: 2026-11-21
