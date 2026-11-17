@@ -68,8 +68,8 @@ games:
     opponentEmoji: "⚓"
     home: true
     tailgating: true
-    rsvpUrl: []
-    menu: []
+    rsvpUrl: https://partiful.com/e/afurQaO9Fwr7KlvjOswo?c=igSZQ0FU
+    menu: breakfast!
     schedule: []
 
   # away games
